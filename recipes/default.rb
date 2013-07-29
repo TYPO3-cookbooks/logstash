@@ -17,7 +17,6 @@
 # limitations under the License.
 #
 
-include_recipe "runit" unless node["platform_version"] >= "12.04"
 include_recipe "java"
 
 include_recipe "logstash::user" if node['logstash']['create_account']
