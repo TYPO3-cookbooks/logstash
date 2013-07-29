@@ -2,30 +2,31 @@
 # Cookbook Name:: logstash
 # Recipe:: default
 #
+# Copyright 2012, John E. Vincent
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 include_recipe "runit" unless node["platform_version"] >= "12.04"
 include_recipe "java"
 
-if node['logstash']['create_account']
-
-  group node['logstash']['group'] do
-    system true
-  end
-
-  user node['logstash']['user'] do
-    group node['logstash']['group']
-    home "/var/lib/logstash"
-    system true
-    action :create
-    manage_home true
-  end
-
-end
+include_recipe "logstash::user" if node['logstash']['create_account']
 
 directory node['logstash']['basedir'] do
   action :create
   owner "root"
   group "root"
-  mode "0755"
+  mode  "0755"
 end
 
 node['logstash']['join_groups'].each do |grp|

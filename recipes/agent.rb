@@ -2,7 +2,21 @@
 # Cookbook Name:: logstash
 # Recipe:: agent
 #
+# Copyright 2012, John E. Vincent
 #
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 include_recipe "logstash::default"
 
 if node['logstash']['agent']['init_method'] == 'runit'
@@ -31,6 +45,7 @@ if node['logstash']['install_zeromq']
       key "C7917B12"
       action :add
     end
+
     apt_repository "libpgm-ppa" do
       uri "http://ppa.launchpad.net/chris-lea/libpgm/ubuntu"
       distribution  node['lsb']['codename']
@@ -44,7 +59,11 @@ if node['logstash']['install_zeromq']
   node['logstash']['zeromq_packages'].each {|p| package p }
 end
 
-# check if running chef-solo.  If not, detect the logstash server/ip by role.  If I can't do that, fall back to using ['logstash']['agent']['server_ipaddress']
+
+# check if running chef-solo
+# If not, detect the logstash server/ip by role.
+# If I can't do that, fall back to using ['logstash']['agent']['server_ipaddress']
+
 if Chef::Config[:solo]
   logstash_server_ip = node['logstash']['agent']['server_ipaddress']
 else
@@ -63,7 +82,7 @@ directory "#{node['logstash']['basedir']}/agent" do
   group node['logstash']['group']
 end
 
-%w{bin etc lib tmp log}.each do |ldir|
+%w[bin etc lib tmp log].each do |ldir|
   directory "#{node['logstash']['basedir']}/agent/#{ldir}" do
     action :create
     mode "0755"
@@ -141,8 +160,9 @@ template "#{node['logstash']['basedir']}/agent/etc/shipper.conf" do
   group node['logstash']['group']
   mode "0644"
   variables(
-            :logstash_server_ip => logstash_server_ip,
-            :patterns_dir => patterns_dir)
+    :logstash_server_ip => logstash_server_ip,
+    :patterns_dir => patterns_dir
+  )
   notifies :restart, service_resource
 end
 
@@ -205,4 +225,3 @@ logrotate_app "logstash" do
     EOF
   end
 end
-
