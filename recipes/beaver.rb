@@ -200,7 +200,7 @@ when "debian"
 end
 
 if use_upstart
-  template "/etc/init/logstash_beaver.conf" do
+  template "/etc/init.d/logstash_beaver.conf" do
     mode "0644"
     source "logstash_beaver.conf.erb"
     variables(

@@ -170,20 +170,7 @@ if node['logstash']['agent']['init_method'] == 'runit'
   runit_service "logstash_agent"
 elsif node['logstash']['agent']['init_method'] == 'native'
   if platform_family? "debian"
-    if node["platform_version"] >= "12.04"
-      template "/etc/init/logstash_agent.conf" do
-        mode "0644"
-        source "logstash_agent.conf.erb"
-        notifies :restart, service_resource
-      end
-
-      service "logstash_agent" do
-        provider Chef::Provider::Service::Upstart
-        action [ :enable, :start ]
-      end
-    else
-      Chef::Log.fatal("Please set node['logstash']['agent']['init_method'] to 'runit' for #{node['platform_version']}")
-    end
+    Chef::Log.fatal("Please set node['logstash']['agent']['init_method'] to 'runit' for #{node['platform_version']}")
   elsif platform_family? "rhel", "fedora"
     template "/etc/init.d/logstash_agent" do
       source "init.erb"
